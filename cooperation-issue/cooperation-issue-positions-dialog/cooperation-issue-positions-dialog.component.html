@@ -1,0 +1,32 @@
+<div class="truster-document-container" mat-dialog-content>
+  <div class="document-bar">
+    <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px"
+      class="truster-action-buttons-row-container document-bar-configuration">
+      <div class="truster-primary-color font-weight-bold nowrap">
+        {{dialogTitle}}
+      </div>
+      <div fxFlex></div>
+      <button (click)="closeDialog()" matTooltip="{{'SCREEN.close_view_tooltip' | translate}}" matTooltipPosition="left"
+        type="button" class="btn btn-outline-dark btn-sm" style="width: 28px; height: 28px;">
+        <span class="fa fa-times"></span>
+      </button>
+    </div>
+  </div>
+  <div class="document-grid-dialogs h-95">
+    <div class="truster-action-buttons-row">
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <input autocomplete="off" fxFlex="30" type="text" class="truster-quick-search"
+          placeholder="{{'FORMS.FIELDS.search' | translate}}..." style="padding-left: 8px;" (input)="onSearch($event)">
+        <div fxFlex></div>
+      </div>
+    </div>
+    <div class="row h-95">
+      <div class="col">
+        <ag-grid-angular style="height: 100%; width: 100%; min-height: 300px;" #issuePositionsGrid
+          [ngBusy]="loadingBusy" class="ag-theme-balham" [suppressClickEdit]="true" [rowData]="issuePositionsData"
+          [getContextMenuItems]="getIssuePositionsContextMenuItems" [gridOptions]="issuePositionsGridOptions">
+        </ag-grid-angular>
+      </div>
+    </div>
+  </div>
+</div>

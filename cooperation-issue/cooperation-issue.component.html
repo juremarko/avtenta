@@ -1,0 +1,177 @@
+<mat-tab-group mat-align-tabs="start" style="height: 100%" animationDuration="0ms" [selectedIndex]="getSelectedIndex()"
+  [ngBusy]="loadingBusy" (selectedIndexChange)="onTabChange($event)">
+  <mat-tab label="{{'SCREEN.overview' | translate }}" style="height: 100%" index="0">
+    <div class="row truster-action-buttons-row-container">
+      <div class="col">
+        <div class="truster-action-buttons-row">
+          <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px">
+            <input autocomplete="off" fxFlex="20" type="text" class="truster-quick-search"
+              placeholder="{{'FORMS.FIELDS.search' | translate}}..." style="padding-left: 8px;"
+              style="padding-left: 8px;" (input)="onSearchCooperationOrders($event)" #searchInput>
+            <div fxFlex="15" style="font-size: 12px;">
+              <mat-form-field class="truster-daterange-form-field" appearance="outline">
+                <mat-date-range-input [formGroup]="cooperationOrdersDateRangeFormGroup" [rangePicker]="rangePicker"
+                  (click)="rangePicker.open()">
+                  <input autocomplete="off" matStartDate
+                    placeholder="{{'SCREEN.PROCUREMENT.COOPERATIONORDERS.start_date' | translate}}"
+                    formControlName="start">
+                  <input autocomplete="off" matEndDate (dateChange)="onDateFilterChanged($event)"
+                    placeholder="{{'SCREEN.PROCUREMENT.COOPERATIONORDERS.end_date' | translate}}" formControlName="end">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="rangePicker">
+                </mat-datepicker-toggle>
+                <mat-date-range-picker #rangePicker></mat-date-range-picker>
+              </mat-form-field>
+            </div>
+            <div fxFlex="15">
+              <ng-select name="status" style="width: 100%" notFoundText="{{'FORMS.FIELDS.no_item_found' | translate}}"
+                [(ngModel)]="selectedStatus" placeholder="{{'SCREEN.PROCUREMENT.COOPERATIONORDERS.status' | translate}}"
+                #statusSelect (change)="onStatusChanged($event)" [clearOnBackspace]="false" [searchable]="false"
+                [clearable]="false">
+                <ng-option *ngFor="let status of statusData" [value]="status.recordId">
+                  {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.'+ status.name | translate}}</ng-option>
+              </ng-select>
+            </div>
+            <div fxFlex></div>
+            <button
+              (click)="onResetScreenLocalStorageSettings(true, ScreenTypeFactoryEnum.cooperationIssuesScreen, cooperationIssuesGridOptions)"
+              matTooltip="{{'FORMS.FIELDS.reset_screen_settings' | translate}}" matTooltipPosition="left" type="button"
+              class="btn btn-outline-dark btn-sm">
+              <span class="fa fa-undo-alt"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row areaheight">
+      <div class="col">
+        <ag-grid-angular #cooperationOrderGrid style="width: 100%; height: 100%;" class="ag-theme-balham"
+          [suppressClickEdit]="true" (rowDoubleClicked)="onCooperationOrderDetails($event)"
+          (rowClicked)="onCooperationOrderDetailsRowClicked($event)"
+          [getContextMenuItems]="getCooperationOrderContextMenuItems" [gridOptions]="cooperationIssuesGridOptions"
+          [rowData]="cooperationOrdersData">
+        </ag-grid-angular>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="{{'FORMS.FIELDS.document_head' | translate }}" *ngIf="headTabVisible" index="1">
+    <div class="truster-action-buttons-row truster-action-buttons-row-container">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <div class="btn btn-warning nowrap"
+          style="color: #fff; padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.preparation">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusPreparation' | translate}}
+        </div>
+        <div class="btn btn-success nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.active">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusConfirmed' | translate}}
+        </div>
+        <div class="btn btn-warning nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.making">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusMaking' | translate}}
+        </div>
+        <div class="btn btn-danger nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.canceled">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusCanceled' | translate}}
+        </div>
+        <div class="btn btn-success nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.completed">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusCompleted' | translate}}
+        </div>
+        <div class="btn btn-secondary nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.protected">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusProtected' | translate}}
+        </div>
+
+        <div class="truster-primary-color font-weight-bold nowrap">{{selectedCooperationOrderData?.code}}</div>
+        <div fxFlex></div>
+        <button class="btn btn-outline-dark btn-sm nowrap" type="button" (click)="onFillIssueQuantities($event)"
+          [disabled]="authorizeDisabled"><span class="fa fa-sort-numeric-down"></span>&nbsp;
+          {{'SCREEN.PROCUREMENT.COOPERATIONISSUES.fillIssueQuantity' | translate}}</button>
+        <button class="btn btn-outline-dark btn-sm nowrap" type="button" (click)="onConfirmCooperationIssue($event)"
+          [disabled]="authorizeDisabled"><span class="fa fa-check"></span>&nbsp;
+          {{'SCREEN.PROCUREMENT.COOPERATIONISSUES.confirm_issue' | translate}}</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="truster-action-buttons-row">
+          <div fxLayout="row" fxLayoutAlign="space-between center">
+            <input autocomplete="off" fxFlex="30" type="text" class="truster-quick-search"
+              placeholder="{{'FORMS.FIELDS.search' | translate}}..." style="padding-left: 8px;"
+              style="padding-left: 8px;" (input)="onIssuePositionSearch($event)">
+            <div fxFlex></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row areaheightshort">
+      <div class="col">
+        <ag-grid-angular #cooperationOrderIssuePositionGrid style="width: 100%; height: 100%;" class="ag-theme-balham"
+          [suppressClickEdit]="true" (rowEditingStopped)="onSaveOrUpdateCooperationOrderIssuePosition($event)"
+          [getContextMenuItems]="getIssuePositionContextMenuItems"
+          [gridOptions]="cooperationOrderIssuePositionsGridOptions" [rowData]="cooperationOrderIssuePositionData">
+        </ag-grid-angular>
+      </div>
+    </div>
+  </mat-tab>
+  <mat-tab label="{{'SCREEN.document_documents' | translate }}" *ngIf="positionsTabVisible" index="2">
+    <div class="truster-action-buttons-row truster-action-buttons-row-container">
+      <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px">
+        <div class="btn btn-warning nowrap"
+          style="color: #fff; padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.preparation">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusPreparation' | translate}}
+        </div>
+        <div class="btn btn-success nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.active">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusConfirmed' | translate}}
+        </div>
+        <div class="btn btn-warning nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.making">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusMaking' | translate}}
+        </div>
+        <div class="btn btn-danger nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.canceled">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusCanceled' | translate}}
+        </div>
+        <div class="btn btn-success nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.completed">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusCompleted' | translate}}
+        </div>
+        <div class="btn btn-secondary nowrap" style="padding: 2.5px 10px; border-radius: 0px; cursor: context-menu;"
+          *ngIf="selectedCooperationOrderData?.status == DocumentStatusCodeEnum.protected">
+          {{'SCREEN.PROCUREMENT.COOPERATIONORDERS.statusProtected' | translate}}
+        </div>
+
+        <div class="truster-primary-color font-weight-bold nowrap">{{selectedCooperationOrderData?.code}}</div>
+        <div fxFlex></div>
+        <button class="btn btn-outline-dark btn-sm nowrap" type="button" (click)="onConfirmCooperationIssue($event)"
+          [disabled]="authorizeDisabled"><span class="fa fa-check"></span>&nbsp;
+          {{'SCREEN.PROCUREMENT.COOPERATIONISSUES.confirm_issue' | translate}}</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <div class="truster-action-buttons-row">
+          <div fxLayout="row" fxLayoutAlign="space-between center">
+            <input autocomplete="off" fxFlex="30" type="text" class="truster-quick-search"
+              placeholder="{{'FORMS.FIELDS.search' | translate}}..." style="padding-left: 8px;"
+              style="padding-left: 8px;" (input)="onIssueSearch($event)">
+            <div fxFlex></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row areaheightshort">
+      <div class="col">
+        <ag-grid-angular #cooperationIssueGrid style="width: 100%; height: 100%;" class="ag-theme-balham"
+          [suppressClickEdit]="true" (rowEditingStopped)="onSaveOrUpdateCooperationIssue($event)"
+          [getContextMenuItems]="getIssueContextMenuItems" [gridOptions]="cooperationIssueGridOptions"
+          [rowData]="cooperationIssueData">
+        </ag-grid-angular>
+      </div>
+    </div>
+  </mat-tab>
+
+</mat-tab-group>

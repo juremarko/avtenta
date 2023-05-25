@@ -1,0 +1,58 @@
+<div class="truster-document-container" mat-dialog-content>
+    <div class="document-bar">
+        <div fxLayout="row" fxLayoutAlign="space-between center" fxLayoutGap="10px"
+            class="truster-action-buttons-row-container document-bar-configuration">
+            <div class="truster-primary-color font-weight-bold nowrap">
+                {{dialogTitle}}
+            </div>
+            <div fxFlex></div>
+            <button (click)="closeDialog()" matTooltip="{{'SCREEN.close_view_tooltip' | translate}}"
+                matTooltipPosition="left" type="button" class="btn btn-outline-dark btn-sm"
+                style="width: 28px; height: 28px;">
+                <span class="fa fa-times"></span>
+            </button>
+        </div>
+    </div>
+    <div class="document-grid-dialogs h-95">
+        <div class="truster-action-buttons-row">
+            <div fxLayout="row" fxLayoutGap="10px">
+                <input autocomplete="off" fxFlex="30" type="text" class="truster-quick-search"
+                    placeholder="{{'FORMS.FIELDS.search' | translate}}..." style="padding-left: 8px;"
+                    (input)="onSearch($event)">
+                <div style="font-size: 12px;">
+                    <mat-form-field class="truster-daterange-form-field" appearance="outline">
+                        <mat-date-range-input [formGroup]="reportDateRangeFormGroup"
+                            [rangePicker]="rangePicker" (click)="rangePicker.open()">
+                            <input autocomplete="off" matStartDate
+                                placeholder="{{'SCREEN.SALES.CUSTOMERORDERS.start_date' | translate}}"
+                                formControlName="start">
+                            <input autocomplete="off" matEndDate (dateChange)="onDateFilterChanged($event)"
+                                placeholder="{{'SCREEN.SALES.CUSTOMERORDERS.end_date' | translate}}"
+                                formControlName="end">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="rangePicker">
+                        </mat-datepicker-toggle>
+                        <mat-date-range-picker #rangePicker></mat-date-range-picker>
+                    </mat-form-field>
+                </div>
+                <!-- <div fxFlex="15">
+                    <ng-select name="status" notFoundText="{{'FORMS.FIELDS.no_item_found' | translate}}" placeholder="{{'SCREEN.WORKORDERS.status' | translate}}"
+                        [(ngModel)]="selectedStatus" #statusSelect (change)="onStatusChanged($event)" style="margin-left: 5px;" [clearOnBackspace]="false" [searchable]="false"
+                        [clearable]="false">
+                        <ng-option *ngFor="let status of statusData" [value]="status.recordId">
+                            {{'SCREEN.WORKORDERS.'+ status.name | translate}}</ng-option>
+                    </ng-select>
+                </div> -->
+            </div>
+        </div>
+        <div class="row h-95">
+            <div class="col">
+                <ag-grid-angular style="height: 100%; width: 100%; min-height: 300px;" #reportGrid
+                    [ngBusy]="loadingBusy" class="ag-theme-balham" [suppressClickEdit]="true" [rowData]="reportData"
+                    [getContextMenuItems]="getContextMenuItems"
+                    [gridOptions]="reportGridOptions">
+                </ag-grid-angular>
+            </div>
+        </div>
+    </div>
+</div>

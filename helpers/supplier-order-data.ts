@@ -1,0 +1,55 @@
+import { ProjectData } from '../../Truster.Core.UI.CodeTable/helpers/project-data';
+import { WarehouseData } from '../../Truster.Core.UI.CodeTable/helpers/warehouse-data';
+import { TypeOfRealisationData } from '../../Truster.Core.UI.CodeTable/helpers/typeofrealisation-data';
+import { ShippingTypeData } from '../../Truster.Core.UI.CodeTable/helpers/shipping-type-data';
+import { PaymentTypeData } from '../../Truster.Core.UI.CodeTable/helpers/payment-type-data';
+import { CurrencyData } from '../../Truster.Core.UI.CodeTable/helpers/currency-data';
+import { SupplierData } from '../../Truster.Core.UI.CodeTable/helpers/supplier-data';
+import { DocumentTypeData } from '../../Truster.Core.UI.CodeTable/helpers/document-type-data';
+import { DocumentStatusCodeEnum } from '../../Truster.Core.UI.CodeTable/helpers/document-status-code-enum';
+import { LocationData } from '../../Truster.Core.UI.CodeTable/helpers/location-data';
+import { VATCalculationTypeData } from '../../Truster.Core.UI.Sales/helpers/vat-calculation-type-data';
+
+export interface SupplierOrderData {
+  recordId?: number;
+  bookingYear?: number;
+  bookingCode?: number;
+  documentTypeId?: number;
+  documentType?: DocumentTypeData;
+  warehouseId?: number;
+  warehouse?: WarehouseData;
+  locationId?: number;
+  location?: LocationData;
+  supplierId?: number;
+  supplier?: SupplierData;
+  createdDate?: string;
+  supplierOrderNumber?: string;
+  projectId?: number;
+  project?: ProjectData;
+  description?: string;
+  isProtected?: boolean;
+  modifiedBy?: string;
+  modifiedDate?: string;
+  isDeleted?: boolean;
+  status?: DocumentStatusCodeEnum;
+  paymentTypeId?: number;
+  paymentType?: PaymentTypeData;
+  shippingTypeId?: number;
+  shippingType?: ShippingTypeData;
+  currencyId?: number;
+  currency?: CurrencyData;
+  typeOfRealisationId?: number;
+  typeOfRealisation?: TypeOfRealisationData;
+  bookedDate?: string;
+  erpId?: number;
+  erpCode?: string;
+  erpOrderNo?: string;
+  syncDate?: string;
+  code?: string;
+  discount?: number;
+  vatCalculationTypeId?: number;
+  vatCalculationTypeCode?: string;
+  vatCalculationTypeName?: string;
+  vatCalculationType?: VATCalculationTypeData;
+}
+
